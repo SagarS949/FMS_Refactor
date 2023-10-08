@@ -384,25 +384,36 @@ class Passenger_Details
     char Gender;
     int Age;
     string Passport_Number;
-public:
     int Seats;
+public:
+    int Get_Seats();
+    void Set_Seats(int);
     void Get_Passenger_Details();
     int Check_Passport_Validity();
-    virtual void Get_Journey_Details(vector<Flight_Details> F) = 0;
+    virtual void Get_Journey_Details(vector<Flight_Details> &F) = 0;
 };
 
 bool ppnValidity(string ppn)
 {
-    const regex pattern("^[A-PR-WY][1-9] \\d\\s?\\d{4}[1-9]$");
+    const regex pattern("^[A-PR-WY][1-9]" "\\d\\s?\\d{4}[1-9]$");//A1 3 1234 1 
     if(regex_match(ppn, pattern))
         return true;
     else    {
-        return true;
-        cout << "Enter valid passport number\t " << endl;
+        //return true;
+        //cout << "Enter valid passport number\t " << endl;
         return false;
     }
 }
 
+int Passenger_Details::Get_Seats()
+{
+    return Seats;
+}
+
+void Passenger_Details::Set_Seats(int seats)
+{
+    Seats=seats;
+}
 void Passenger_Details::Get_Passenger_Details()
 {
     bool ppnv;
@@ -426,9 +437,13 @@ void Passenger_Details::Get_Passenger_Details()
     cout << "Enter Passenger's Passport Number: ";
     cin >> Passport_Number;
     ppnv = ppnValidity(Passport_Number);
-    if(!ppnv)
-        cin >> Passport_Number;
-        ppnv = ppnValidity(Passport_Number);
+    if(!ppnv){
+        do{
+            cout << "Enter valid passport number\t " << endl;
+            cin >> Passport_Number;
+            ppnv = ppnValidity(Passport_Number);
+        }while(!ppnv);
+    }
     cout<<endl;
 }
 
@@ -437,11 +452,11 @@ class Ticket_Booking:public Passenger_Details
 public:
     string User_Source;
     string User_Destination;
-    void Get_Journey_Details(vector<Flight_Details> F);
+    void Get_Journey_Details(vector<Flight_Details> &F) override;
     void Checking_Database_And_Final_Booking(vector<Flight_Details> F);
 };
 
-void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> F)
+void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> &F)
 {
     Get_Passenger_Details();
     cout << "Enter your Source: ";
@@ -451,7 +466,9 @@ void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> F)
     cin >> User_Destination;
     transform(User_Destination.begin(), User_Destination.end(), User_Destination.begin(), ::toupper);
     cout << "Enter the number of Passengers: ";
-    cin >> Seats;
+    int seats;
+    cin >> seats;
+    Set_Seats(seats);
 }
 
 void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> F)
@@ -490,7 +507,7 @@ void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> 
                 cin>>seat_choice;
                 if(seat_choice==1)
                 {
-                    if(F[i].Economy_Seats_Available<Seats)
+                    if(F[i].Economy_Seats_Available<Get_Seats())
                     {
                         char Class_Shifting;
                         cout<<"Sorry, seats not available."<<endl;
@@ -505,14 +522,14 @@ void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> 
                             goto Flight_Choosing;
                         }
                     }
-                    F[i].Economy_Seats_Available-=Seats;
+                    F[i].Economy_Seats_Available-=Get_Seats();
                     cout<<"Economy Class Seat booked in: "<<F[i].Flight_Number<<endl;
-                    cout<<"Price: "<<F[i].Economy_Cost*Seats<<endl;
+                    cout<<"Price: "<<F[i].Economy_Cost*Get_Seats()<<endl;
                     break;
                 }
                 else if(seat_choice==2)
                 {
-                    if(F[i].Business_Seats_Available<Seats)
+                    if(F[i].Business_Seats_Available<Get_Seats())
                     {
                         char Class_Shifting;
                         cout<<"Sorry, seats not available."<<endl;
@@ -527,9 +544,9 @@ void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> 
                             goto Flight_Choosing;
                         }
                     }
-                    F[i].Business_Seats_Available-=Seats;
+                    F[i].Business_Seats_Available-=Get_Seats();
                     cout<<"Business Class Seat booked in: "<<F[i].Flight_Number<<endl;
-                    cout<<"Price: "<<F[i].Business_Cost*Seats<<endl;
+                    cout<<"Price: "<<F[i].Business_Cost*Get_Seats()<<endl;
                     break;
                 }
                 else
@@ -557,10 +574,10 @@ class Routes:public Flight_Details
 {
 public:
     void Table_Printing(vector<Flight_Details> F);
-    void Print_Database(Flight_Details F);
+    void Print_Database(Flight_Details &F);
 };
 
-void Routes::Print_Database(Flight_Details F)
+void Routes::Print_Database(Flight_Details &F)
 {
     cout<<setw(6)<<F.Flight_Number;
     cout<<setw(20)<<F.Flight_Company;
@@ -594,13 +611,13 @@ void Routes::Table_Printing(vector<Flight_Details> F)
 class Ticket_Cancellation:public Passenger_Details
 {
 public:
-    char Cancelled_Flight_Number[7];
+    string Cancelled_Flight_Number;
     int Seat_Type;
-    void Get_Journey_Details(vector<Flight_Details> F);
+    void Get_Journey_Details(vector<Flight_Details> &F) override;
     void Checking_Database_And_Cancelling_Ticket(vector<Flight_Details> F);
 };
 
-void Ticket_Cancellation::Get_Journey_Details(vector<Flight_Details> F)
+void Ticket_Cancellation::Get_Journey_Details(vector<Flight_Details> &F)
 {
     Get_Passenger_Details();
     cout<<"Enter the Flight Number: ";
@@ -608,7 +625,9 @@ void Ticket_Cancellation::Get_Journey_Details(vector<Flight_Details> F)
     cout<<"Enter seat type (1 for 'Economy', 2 for 'Business'): ";
     cin>>Seat_Type;
     cout << "Enter the number of tickets to be cancelled: ";
-    cin >> Seats;
+    int seats;
+    cin >> seats;
+    Set_Seats(seats);
 }
 
 void Ticket_Cancellation::Checking_Database_And_Cancelling_Ticket(vector<Flight_Details> F)
@@ -624,14 +643,14 @@ void Ticket_Cancellation::Checking_Database_And_Cancelling_Ticket(vector<Flight_
                 cout << "\n\n";
                 Sleep(1500);
                 cout<<"The Booking for Flight Number: "<<F[i].Flight_Number<<" has been cancelled"<<endl;
-                F[i].Economy_Seats_Available+=Seats;
-                cout<<"Amount: "<<F[i].Economy_Cost*Seats-1000<<" has been refunded."<<endl;
+                F[i].Economy_Seats_Available+=Get_Seats();
+                cout<<"Amount: "<<F[i].Economy_Cost*Get_Seats()-1000<<" has been refunded."<<endl;
                 cout<<"A cancellation fee of 1000Rs has been applied."<<endl;
                 break;
             case 2:
                 cout<<"The Booking for Flight Number: "<<F[i].Flight_Number<<" has been cancelled"<<endl;
-                F[i].Business_Seats_Available+=Seats;
-                cout<<"Amount: "<<F[i].Business_Cost*Seats-1000<<" has been refunded."<<endl;
+                F[i].Business_Seats_Available+=Get_Seats();
+                cout<<"Amount: "<<F[i].Business_Cost*Get_Seats()-1000<<" has been refunded."<<endl;
                 cout<<"A cancellation fee of 1000Rs has been applied."<<endl;
                 break;
             default:
@@ -674,9 +693,8 @@ int main()
         cout << "--------------------------------------------BOOKING-----------------------------------------------------" << endl;
             ptr = &TB;
             ptr->Get_Journey_Details(F);
-            //TB.Get_Journey_Details(F);
             cout << "\n";
-            for(int i=0;i<(TB.Seats-1);i++)
+            for(int i=0;i<(TB.Get_Seats()-1);i++)
             {
                 Sleep(500);
                 cout << "Enter new passenger's details\n";
@@ -696,7 +714,6 @@ int main()
             cout << "-----------------CANCELLATION-----------------" << endl;
             ptr = &TC;
             ptr->Get_Journey_Details(F);
-            //TC.Get_Journey_Details(F);
             TC.Checking_Database_And_Cancelling_Ticket(F);
             break;
         case 4:
@@ -712,6 +729,6 @@ int main()
     Sleep(5000);
     cout << "--------------------------------------------------NEW USER-----------------------------------------------------------" ;
     cout << "\n\n\n";
-    }while(1);
-    return(0);
+    }while(true);
+    return 0;
 }
