@@ -452,7 +452,7 @@ public:
     string User_Source;
     string User_Destination;
     void Get_Journey_Details(vector<Flight_Details> &F) override;
-    void Checking_Database_And_Final_Booking(vector<Flight_Details> F);
+    void Checking_Database_And_Final_Booking(vector<Flight_Details> F) const;
     void flight_choice_y(vector<Flight_Details> F,int,int&) const;
 };
 
@@ -524,7 +524,7 @@ void Ticket_Booking::flight_choice_y(vector<Flight_Details> F,int i,int &flag) c
         }
     }
 }
-void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> F)
+void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> F) const
 {
     int counter1=0;
     char flight_choice;
