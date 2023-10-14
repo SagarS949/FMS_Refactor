@@ -453,7 +453,7 @@ public:
     string User_Destination;
     void Get_Journey_Details(vector<Flight_Details> &F) override;
     void Checking_Database_And_Final_Booking(vector<Flight_Details> F);
-    void flight_choice_y(vector<Flight_Details> F,int,int&);
+    void flight_choice_y(vector<Flight_Details> F,int,int&) const;
 };
 
 void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> &F)
@@ -470,7 +470,7 @@ void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> &F)
     cin >> seats;
     Set_Seats(seats);
 }
-void Ticket_Booking::flight_choice_y(vector<Flight_Details> F,int i,int &flag)
+void Ticket_Booking::flight_choice_y(vector<Flight_Details> F,int i,int &flag) const
 {
     int seat_choice;
     while (true) {
@@ -620,7 +620,7 @@ public:
     string Cancelled_Flight_Number;
     int Seat_Type;
     void Get_Journey_Details(vector<Flight_Details> &F) override;
-    void Checking_Database_And_Cancelling_Ticket(vector<Flight_Details> F);
+    void Checking_Database_And_Cancelling_Ticket(vector<Flight_Details> F) const;
 };
 
 void Ticket_Cancellation::Get_Journey_Details(vector<Flight_Details> &F)
@@ -636,7 +636,7 @@ void Ticket_Cancellation::Get_Journey_Details(vector<Flight_Details> &F)
     Set_Seats(seats);
 }
 
-void Ticket_Cancellation::Checking_Database_And_Cancelling_Ticket(vector<Flight_Details> F)
+void Ticket_Cancellation::Checking_Database_And_Cancelling_Ticket(vector<Flight_Details> F) const
 {
     int counter2=0;
     for(int i=0;i<18;i++)
