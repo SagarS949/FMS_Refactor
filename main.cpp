@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <unistd.h>
 #include <cctype>
+#include <algorithm>
 #include <regex>
 #include<bits/stdc++.h>
 #include <string>
@@ -452,6 +453,7 @@ public:
     string User_Destination;
     void Get_Journey_Details(vector<Flight_Details> &F) override;
     void Checking_Database_And_Final_Booking(vector<Flight_Details> F);
+    void flight_choice_y(vector<Flight_Details> F,int,int&);
 };
 
 void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> &F)
@@ -468,12 +470,64 @@ void Ticket_Booking::Get_Journey_Details(vector<Flight_Details> &F)
     cin >> seats;
     Set_Seats(seats);
 }
+void Ticket_Booking::flight_choice_y(vector<Flight_Details> F,int i,int &flag)
+{
+    int seat_choice;
+    while (true) {
+        std::cout << "Would you like to book:\n1. Economy Class\n2. Business Class" << std::endl;
+        cin >> seat_choice;
 
+        if (seat_choice == 1) {
+            if (F[i].Economy_Seats_Available < Get_Seats()) {
+                char class_shifting;
+                std::cout << "Sorry, seats not available." << std::endl;
+                std::cout << "Would you like to go for Business Class? (press y for yes, and n for no)" << std::endl;
+                cin >> class_shifting;
+
+                if (class_shifting == 'y') {
+                    // Go back to seat choice
+                    continue;
+                } else {
+                    // Go back to flight choice
+                    break;
+                }
+            }
+
+            F[i].Economy_Seats_Available -= Get_Seats();
+            std::cout << "Economy Class Seat booked in: " << F[i].Flight_Number << std::endl;
+            std::cout << "Price: " << F[i].Economy_Cost * Get_Seats() << std::endl;
+            flag=1;
+            break; // Exit the loop after booking
+        } else if (seat_choice == 2) {
+            if (F[i].Business_Seats_Available < Get_Seats()) {
+                char class_shifting;
+                std::cout << "Sorry, seats not available." << std::endl;
+                std::cout << "Would you like to go for Economy Class? (press y for yes, and n for no)" << std::endl;
+                cin >> class_shifting;
+
+                if (class_shifting == 'y') {
+                    // Go back to seat choice
+                    continue;
+                } else {
+                    // Go back to flight choice
+                    break;
+                }
+            }
+
+            F[i].Business_Seats_Available -= Get_Seats();
+            std::cout << "Business Class Seat booked in: " << F[i].Flight_Number << std::endl;
+            std::cout << "Price: " << F[i].Business_Cost * Get_Seats() << std::endl;
+            flag=1;
+            break; // Exit the loop after booking
+        } else {
+            std::cout << "Please input a valid choice" << std::endl;
+        }
+    }
+}
 void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> F)
 {
     int counter1=0;
     char flight_choice;
-    int seat_choice;
     for(int i=0;i<18;i++)
     {
         if((F[i].Source==User_Source)&&(F[i].Destination==User_Destination))
@@ -499,56 +553,7 @@ void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> 
                 flight_choice = tolower(flight_choice);
 
                 if (flight_choice == 'y') {
-                    while (true) {
-                        std::cout << "Would you like to book:\n1. Economy Class\n2. Business Class" << std::endl;
-                        cin >> seat_choice;
-
-                        if (seat_choice == 1) {
-                            if (F[i].Economy_Seats_Available < Get_Seats()) {
-                                char class_shifting;
-                                std::cout << "Sorry, seats not available." << std::endl;
-                                std::cout << "Would you like to go for Business Class? (press y for yes, and n for no)" << std::endl;
-                                cin >> class_shifting;
-
-                                if (class_shifting == 'y') {
-                                    // Go back to seat choice
-                                    continue;
-                                } else {
-                                    // Go back to flight choice
-                                    break;
-                                }
-                            }
-
-                            F[i].Economy_Seats_Available -= Get_Seats();
-                            std::cout << "Economy Class Seat booked in: " << F[i].Flight_Number << std::endl;
-                            std::cout << "Price: " << F[i].Economy_Cost * Get_Seats() << std::endl;
-                            flag=1;
-                            break; // Exit the loop after booking
-                        } else if (seat_choice == 2) {
-                            if (F[i].Business_Seats_Available < Get_Seats()) {
-                                char class_shifting;
-                                std::cout << "Sorry, seats not available." << std::endl;
-                                std::cout << "Would you like to go for Economy Class? (press y for yes, and n for no)" << std::endl;
-                                cin >> class_shifting;
-
-                                if (class_shifting == 'y') {
-                                    // Go back to seat choice
-                                    continue;
-                                } else {
-                                    // Go back to flight choice
-                                    break;
-                                }
-                            }
-
-                            F[i].Business_Seats_Available -= Get_Seats();
-                            std::cout << "Business Class Seat booked in: " << F[i].Flight_Number << std::endl;
-                            std::cout << "Price: " << F[i].Business_Cost * Get_Seats() << std::endl;
-                            flag=1;
-                            break; // Exit the loop after booking
-                        } else {
-                            std::cout << "Please input a valid choice" << std::endl;
-                        }
-                    }
+                    flight_choice_y(F,i,flag);
                 } else if (flight_choice == 'n') {
                     // User chose not to book this flight
                     continue;
