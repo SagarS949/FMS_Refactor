@@ -387,14 +387,14 @@ class Passenger_Details
     string Passport_Number;
     int Seats;
 public:
-    int Get_Seats();
+    int Get_Seats() const;
     void Set_Seats(int);
     void Get_Passenger_Details();
     int Check_Passport_Validity();
     virtual void Get_Journey_Details(vector<Flight_Details> &F) = 0;
 };
 
-bool ppnValidity(string &ppn)
+bool ppnValidity(const string &ppn)
 {
     const regex pattern("^[A-PR-WY][1-9]" "\\d\\s?\\d{4}[1-9]$");//A1 3 1234 1 
     if(regex_match(ppn, pattern))
@@ -404,7 +404,7 @@ bool ppnValidity(string &ppn)
     }
 }
 
-int Passenger_Details::Get_Seats()
+int Passenger_Details::Get_Seats() const
 {
     return Seats;
 }
@@ -579,7 +579,7 @@ void Ticket_Booking::Checking_Database_And_Final_Booking(vector<Flight_Details> 
 class Routes:public Flight_Details
 {
 public:
-    void Table_Printing(vector<Flight_Details> F);
+    void Table_Printing(vector<Flight_Details> F) const;
     void Print_Database(const Flight_Details &F) const;
 };
 
@@ -595,7 +595,7 @@ void Routes::Print_Database(const Flight_Details &F) const
     std::cout<<setw(15)<<F.Duration;
 }
 
-void Routes::Table_Printing(vector<Flight_Details> F)
+void Routes::Table_Printing(vector<Flight_Details> F) const
 {
     std::cout<<setw(6)<<"Flight";
     std::cout<<setw(20)<<"Company";
