@@ -580,10 +580,10 @@ class Routes:public Flight_Details
 {
 public:
     void Table_Printing(vector<Flight_Details> F);
-    void Print_Database(Flight_Details &F);
+    void Print_Database(const Flight_Details &F) const;
 };
 
-void Routes::Print_Database(Flight_Details &F)
+void Routes::Print_Database(const Flight_Details &F) const
 {
     std::cout<<setw(6)<<F.Flight_Number;
     std::cout<<setw(20)<<F.Flight_Company;
@@ -693,12 +693,13 @@ int main()
         std::cout <<"\n\n" <<endl;
         switch(Menu_Choice)
         {
-        case 1:
+        case 1:{
         std::cout << "--------------------------------------------BOOKING-----------------------------------------------------" << endl;
             ptr = &TB;
             ptr->Get_Journey_Details(F);
             std::cout << "\n";
-            for(int i=0;i<(TB.Get_Seats()-1);i++)
+            int countt = (TB.Get_Seats()-1);
+            for(int i=0;i<countt;i++)
             {
                 Sleep(500);
                 std::cout << "Enter new passenger's details\n";
@@ -707,25 +708,25 @@ int main()
             }
             Sleep(2000);
             TB.Checking_Database_And_Final_Booking(F);
-            break;
-        case 2:
+            break;}
+        case 2:{
             std::cout << "--------------------------------------------------ROUTES-----------------------------------------------------------" << endl;
             R.Table_Printing(F);
             std::cout << "\n\nNow ";
-            break;
-        case 3:
+            break;}
+        case 3:{
             std::cout << "-----------------CANCELLATION-----------------" << endl;
             ptr = &TC;
             ptr->Get_Journey_Details(F);
             TC.Checking_Database_And_Cancelling_Ticket(F);
-            break;
-        case 4:
+            break;}
+        case 4:{
             std::cout << "Thank you for using our platform!!!";
             Sleep(2000);
             exit(0);
-            break;
-        default:
-            std::cout<<"Invalid Input, please input a valid menu choice"<<endl;
+            break;}
+        default:{
+            std::cout<<"Invalid Input, please input a valid menu choice"<<endl;}
         }
     std::cout << "\n\n";
     Sleep(5000);
